@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Thing</title>
+	<style type='text/css'>
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+	<h1>Mouse and Pictures</h1>
+	<canvas id='canvas' width='800' height='600'></canvas>
+	<script type='text/javascript'>
+	
+	var can = document.getElementById('canvas');
+	var ctx;
+	var lastTickTime = 0;
+	var UPDATEINTERVAL = 1000 / 30;
+	var accumulate = 0;
+	var GAME = 0;
+	var MENU = -1;
+	var update;
+	var draw;
+	
+	var player = {
+		x: 0,
+		y: 0,
+		speed: 100, //speed is measured in pixels per second
+		angle: 0,
+		width: 30,
+		height: 30,
+		up: false,
+		down: false,
+		left: false,
+		right: false,
+		};
+	
+	function playUpdate(time){
+		//*****This code moves the player*****
+		if(player.up || player.down || player.right || player.left){
+			var vert = 0;
+			var horz = 0;
+			if(player.left)
+				horz--;
+			if(player.right)
+				horz++;
+			if(player.up)
+				vert--;
+			if(player.down)
+				vert++;
+			var angle = Math.atan2(vert,horz);
+			if(horz != 0)
+				player.x += Math.cos(angle) * player.speed * time * 0.001;
+			if(vert !=0)
+				player.y += Math.sin(angle) * player.speed * time * 0.001;
+		}
+		//Collision detection with walls
+		if(player.x < 0)
+			player.x = 0;
+		else if(player.x + player.width > can.width)
+			player.x = can.width - player.width;
+		if(player.y < 0)
+			player.y = 0;
+		else if(player.y + player.height > can.height)
+			player.y = can.height - player.height;
+			
+		//*****end of the player movent code*****
+	}
+	
+	function playDraw(){
+		ctx.clearRect(0,0,can.width, can.height);
+		
+		ctx.fillStyle = "#FF0000";
+		
+		ctx.fillRect(player.x, player.y, player.width, player.height);
+		//ctx.fillText("" + lastTickTime,100,100); //This is test code, used to show the time
+		
+	}
+	//Starting position
+	function playSetup(){
+		player.x = 10;
+		player.y = 10;
+	}
+
+
+	
+	//*****code to tell time
+	function tick(time){
+		var deltaTime = time - lastTickTime;
+		
+		playDraw();
+		
+		accumulate += deltaTime;
+		
+		while(accumulate >= UPDATEINTERVAL){
+			playUpdate(UPDATEINTERVAL);
+			accumulate -= UPDATEINTERVAL;
+		}
+		
+		lastTickTime = time;
+		window.requestAnimationFrame(tick);
+	}
+	
+	//****Handling buttons being pressed**
+	function handleKeyDown(evt){
+		if(evt.keyCode == 87)//w
+			player.up = true;
+		if(evt.keyCode == 83)//s
+			player.down = true;
+		if(evt.keyCode == 65)//a
+			player.left = true;
+		if(evt.keyCode == 68)//d
+			player.right = true;
+			
+		if(65 <= evt.keyCode && evt.keyCode >= 90)
+			evt.preventDefault();
+	}
+	
+	function handleKeyUp(evt){
+		if(evt.keyCode == 87)//w
+			player.up = false;
+		if(evt.keyCode == 83)//s
+			player.down = false;
+		if(evt.keyCode == 65)//a
+			player.left = false;
+		if(evt.keyCode == 68)//d
+			player.right = false;
+			
+		if(65 <= evt.keyCode && evt.keyCode >= 90)
+			evt.preventDefault();
+	}
+	//****End handling buttons being pressed**
+	
+	
+	function main(){
+		ctx = document.getElementById('canvas').getContext("2d");
+		
+		window.requestAnimationFrame(tick);
+	}
+	
+	document.addEventListener('keydown', handleKeyDown);
+	document.addEventListener('keyup', handleKeyUp);
+	
+	main();
+	
+	</script>
+</html>

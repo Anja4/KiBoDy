@@ -34,6 +34,7 @@
 		down: false,
 		left: false,
 		right: false,
+		LClick: false,
 		};
 	
 	function playUpdate(time){
@@ -136,20 +137,15 @@
 	function handleMouseDown(e){
 		var evt = e || window ;
 		if( evt.button === 0 ){ //Left Click
-			console.log("left");
+			player.LClick = true;
 		}
-		if( evt.button === 1 ){
-			console.log("one");
+	}
+	
+	function handleMouseUp(e){
+		var evt = e || window;
+		if( evt.button === 0){ //Left Click
+			player.LClick = false;
 		}
-		if(evt.button === 2){ //Right Click
-			console.log("two");
-		}
-		if(evt.button === 3){
-			console.log("three");
-		}
-		
-		if(0 <= evt.button && evt.button <= 3)
-			evt.preventDefault();
 	}
 	
 	function main(){
@@ -161,6 +157,7 @@
 	document.addEventListener('keydown', handleKeyDown);
 	document.addEventListener('keyup', handleKeyUp);
 	document.addEventListener('mousedown', handleMouseDown);
+	document.addEventListener('mouseup', handleMouseUp);
 	
 	main();
 	

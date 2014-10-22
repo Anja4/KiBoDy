@@ -133,15 +133,7 @@
 	//****End handling buttons being pressed**
 	
 	//MOUSE FOR GRID
-	/*function mouseClicked(e){
-		var evt = e || window.event;
-		
-		mouse_x = evt.pageX - can.offsetLeft;
-		mouse_y = evt.pageY - can.offsetTop;
-		
-		if((mouse_x > 0 && mouse_x <= 800) && (mouse_y > 0 && mouse_y <= 600)){
-			
-		}*/
+
 	function handleMouseDown(e){
 		var evt = e || window ;
 		if( evt.button === 1 ){ //Right Click?
@@ -149,7 +141,7 @@
 				can.fillRect(20, 20, 50, 50);
 			}
 		}
-	
+	}
 	
 	function main(){
 		ctx = document.getElementById('canvas').getContext("2d");

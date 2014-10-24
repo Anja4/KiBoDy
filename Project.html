@@ -37,6 +37,7 @@
 		down: false,
 		left: false,
 		right: false,
+		LClick: false,
 		};
 	
 	
@@ -234,6 +235,20 @@
 	}
 	//****End handling buttons being pressed**
 	
+	//MOUSE FOR GRID
+	function handleMouseDown(e){
+		var evt = e || window ;
+		if( evt.button === 0 ){ //Left Click
+			player.LClick = true;
+		}
+	}
+	
+	function handleMouseUp(e){
+		var evt = e || window;
+		if( evt.button === 0){ //Left Click
+			player.LClick = false;
+		}
+	}
 	
 	function main(){
 		ctx = document.getElementById('canvas').getContext("2d");
@@ -244,6 +259,8 @@
 	
 	document.addEventListener('keydown', handleKeyDown);
 	document.addEventListener('keyup', handleKeyUp);
+	document.addEventListener('mousedown', handleMouseDown);
+	document.addEventListener('mouseup', handleMouseUp);
 	
 	main();
 	

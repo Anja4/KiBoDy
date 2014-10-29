@@ -22,17 +22,23 @@
 	var update;
 	var draw;
 	
+	var spider= new Image();
+	var beedog=new Image();
+	
 	var baddies = [];
 	var bullets = [];
 	var trees = [];
+	var go=false;
+	var playButton={x:300,y:350,w:200,h:70}
+	var mouse = { x: 0, y: 0, clicked: false };
 	
 	var player = {
 		x: 0,
 		y: 0,
 		speed: 100, //speed is measured in pixels per second
 		angle: 0,
-		width: 30,
-		height: 30,
+		width: 50,
+		height: 50,
 		up: false,
 		down: false,
 		left: false,
@@ -40,9 +46,28 @@
 		};
 	
 	
-	
-	
-	
+	//****************************MENU***********
+	function menuUpdate(time){
+		if ( mouse.clicked && contains(playButton, mouse) === true ) {
+			update = playUpdate;
+			draw = playDraw;
+			playSetup();
+		}
+	}
+	function menuDraw(){
+		ctx.clearRect(0,0,can.width,can.height);
+		ctx.fillStyle="green";
+		ctx.fillRect(300,350,200,70);
+		ctx.font="30pt Helvetica";
+		ctx.fillStyle="black";
+		ctx.fillText("Play!",340,400);
+		ctx.font="30pt Cursive";
+		ctx.fillText("Game Thingy 1.6!",250,100);
+	}
+	function menuSetup(){
+		update = menuUpdate;
+		draw = menuDraw;
+	}
 	//*************************PLAY FUNCTIONS****************************
 	
 	
@@ -104,11 +129,13 @@
 		
 		ctx.fillStyle = "#FF0000";
 		
-		ctx.fillRect(player.x, player.y, player.width, player.height);
+		//ctx.fillRect(player.x, player.y, player.width, player.height);
+		ctx.drawImage(beedog,player.x,player.y);
 		
 		ctx.fillStyle = "#FF0000";
 		for(var i = 0; i < baddies.length; i++){
-			ctx.fillRect(baddies[i].x,baddies[i].y,baddies[i].width,baddies[i].height);
+			//ctx.fillRect(baddies[i].x,baddies[i].y,baddies[i].width,baddies[i].height);
+			ctx.drawImage(spider,baddies[i].x,baddies[i].y);
 		}
 		//ctx.fillStyle = "#FFFF00";
 		for(var j = 0; j < bullets.length; j++){
@@ -137,6 +164,8 @@
 		addBullet(0,0,Math.atan2(80,100));
 		addBullet(0,0,Math.atan2(70,100));
 		addBullet(0,0,Math.atan2(60,100));
+		spider.src="face-small.png";
+		beedog.src="beedog.png";
 	}
 	
 	function addBaddie(){
@@ -162,8 +191,8 @@
 		baddies.push({
 			x: xx,
 			y: yy,
-			width: 10,
-			height: 10,
+			width: 50,
+			height: 50,
 			speed: 30,
 			health: 100,
 			});
@@ -214,8 +243,10 @@
 			player.left = true;
 		if(evt.keyCode == 68)//d
 			player.right = true;
+		if(evt.keyCode == 32)//space
+			go = true;
 			
-		if(65 <= evt.keyCode && evt.keyCode >= 90)
+		if(32 <= evt.keyCode && evt.keyCode >= 90)
 			evt.preventDefault();
 	}
 	
@@ -228,20 +259,33 @@
 			player.left = false;
 		if(evt.keyCode == 68)//d
 			player.right = false;
+		if(evt.keyCode == 32)//space
+			go = false;
 			
-		if(65 <= evt.keyCode && evt.keyCode >= 90)
+		if(32 <= evt.keyCode && evt.keyCode >= 90)
 			evt.preventDefault();
 	}
+	function getClick(e) {
+		var evt = e || window.event;
+		mouse.x = evt.pageX - ctx.canvas.offsetLeft;
+		mouse.y = evt.pageY - ctx.canvas.offsetTop;
+		mouse.clicked = true;
+	}
+	function contains( r, m ) {
+		return ! (r.x>m.x || r.y>m.y || m.x>r.x+r.w || m.y>r.y+r.h );
+	}
+	
 	//****End handling buttons being pressed**
 	
 	
 	function main(){
 		ctx = document.getElementById('canvas').getContext("2d");
-		playSetup();
+		menuSetup();
 		
 		window.requestAnimationFrame(tick);
 	}
 	
+	document.addEventListener('click', getClick);
 	document.addEventListener('keydown', handleKeyDown);
 	document.addEventListener('keyup', handleKeyUp);
 	

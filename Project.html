@@ -22,28 +22,52 @@
 	var update;
 	var draw;
 	
+	var spider= new Image();
+	var beedog=new Image();
+	
 	var baddies = [];
 	var bullets = [];
 	var trees = [];
+	var go=false;
+	var playButton={x:300,y:350,w:200,h:70}
+	var mouse = { x: 0, y: 0, clicked: false };
 	
 	var player = {
 		x: 0,
 		y: 0,
 		speed: 100, //speed is measured in pixels per second
 		angle: 0,
-		width: 30,
-		height: 30,
+		width: 50,
+		height: 50,
 		up: false,
 		down: false,
 		left: false,
 		right: false,
-		LClick: false,
 		};
 	
 	
-	
-	
-	
+	//****************************MENU***********
+	function menuUpdate(time){
+		if ( mouse.clicked && contains(playButton, mouse) === true ) {
+			update = playUpdate;
+			draw = playDraw;
+			playSetup();
+		}
+	}
+	function menuDraw(){
+		ctx.clearRect(0,0,can.width,can.height);
+		ctx.fillStyle="green";
+		ctx.fillRect(300,350,200,70);
+		ctx.font="30pt Helvetica";
+		ctx.fillStyle="black";
+		ctx.fillText("Play!",340,400);
+		ctx.font="30pt Cursive";
+		ctx.fillText("Game Thingy 1.6!",250,100);
+	}
+	function menuSetup(){
+		update = menuUpdate;
+		draw = menuDraw;
+	}
 	//*************************PLAY FUNCTIONS****************************
 	
 	
@@ -87,40 +111,6 @@
 			bullets[i].y += Math.sin(bullets[i].angle) * bullets[i].speed * time * 0.001;
 		}
 		
-		//*****This code makes the trees shoot at baddies
-		for(var i = 0; i < trees.length; i++){
-			
-			var treeCenter = {
-				x: trees[i].x + (trees[i].width * 0.5),
-				Y: trees[i].y + (trees[i].height * 0.5)};
-				
-			trees[i].timeToWait -= time;
-			
-			if(trees[i].timeToWait <= 0){
-			
-				var distance = -1;
-				var index = -1;
-				for(var j = 0; j < baddies.length; j++){
-					//find the distance from the center of the tree to the center of the baddie
-					var baddieCenter = {
-						x: baddies[j].x + (baddies[j].width * 0.5),
-						y: baddies[j].y + (baddies[j].height * 0.5)};
-					
-					var curDist = Math.sqrt(Math.pow(baddieCenter.x - treeCenter.x,2) + Math.pow( baddieCenter.y - treeCenter.y,2));
-					if(distance == -1 || curDist < distance){
-						index = j;
-						distance = curDist;
-					}
-				}
-				if(index != -1){
-					var bul = trees[i].bulletToFire;
-					bul.angle = Math.atan2((baddies[index].y + (baddies[index].height * 0.5)) - treeCenter.y,(baddies[index].x + (baddies[index].width * 0.5)) - treeCenter.x);//(baddies[index].y + (baddies[index].height * 0.5)) - treeCenter.y
-					addBullet(bul);
-				}
-				trees[i].timeToWait += trees[i].WAIT;
-			}
-		}
-		
 		//Collision detection with walls
 		if(player.x < 0)
 			player.x = 0;
@@ -139,24 +129,20 @@
 		
 		ctx.fillStyle = "#FF0000";
 		
-		ctx.fillRect(player.x, player.y, player.width, player.height);
+		//ctx.fillRect(player.x, player.y, player.width, player.height);
+		ctx.drawImage(beedog,player.x,player.y);
 		
 		ctx.fillStyle = "#FF0000";
 		for(var i = 0; i < baddies.length; i++){
-			ctx.fillRect(baddies[i].x,baddies[i].y,baddies[i].width,baddies[i].height);
+			//ctx.fillRect(baddies[i].x,baddies[i].y,baddies[i].width,baddies[i].height);
+			ctx.drawImage(spider,baddies[i].x,baddies[i].y);
 		}
 		//ctx.fillStyle = "#FFFF00";
 		for(var j = 0; j < bullets.length; j++){
 			ctx.fillRect(bullets[j].x,bullets[j].y,bullets[j].width,bullets[j].height);
 		}
-		ctx.fillStyle = "#00FF00";
-		for(var i = 0; i < trees.length; i++){
-			ctx.fillRect(trees[i].x,trees[i].y,trees[i].width,trees[i].height);
-		}
 		
 		//ctx.fillText("" + lastTickTime,100,100); //This is test code, used to show the time
-		//ctx.fillText("" + trees[0].timeToWait,100,100);
-		//ctx.fillText("" + bullets[bullets.length - 1].x + " " + bullets[bullets.length - 1].y,100,120);
 	}
 	
 	//Starting position
@@ -164,15 +150,8 @@
 		update = playUpdate;
 		draw = playDraw;
 		
-		var bul = {
-			x: 10,
-			y: 10,
-			width: 5,
-			height: 5,
-			angle: 0,
-			speed: 300,
-			damage: 25};
-		
+		player.x = 10;
+		player.y = 10;
 		player.x = 10;
 		player.y = 10;
 		addBaddie();
@@ -180,8 +159,13 @@
 		addBaddie();
 		addBaddie();
 		addBaddie();
-		addBullet(bul);
-		addTree(200,200,"blah");
+		addBullet(0,0,Math.atan2(50,100));
+		addBullet(0,0,Math.atan2(90,100));
+		addBullet(0,0,Math.atan2(80,100));
+		addBullet(0,0,Math.atan2(70,100));
+		addBullet(0,0,Math.atan2(60,100));
+		spider.src="face-small.png";
+		beedog.src="beedog.png";
 	}
 	
 	function addBaddie(){
@@ -207,35 +191,22 @@
 		baddies.push({
 			x: xx,
 			y: yy,
-			width: 10,
-			height: 10,
+			width: 50,
+			height: 50,
 			speed: 30,
 			health: 100,
 			});
 	}
 	
-	function addBullet(b){//b must include these vars: x, y, width (5), height (5), speed (300), angle, damage
-		bullets.push(b);
-	}
-	
-	function addTree(xx,yy,type){
-		
-		trees.push({
+	function addBullet(xx,yy,anglei){
+		bullets.push({
 			x: xx,
 			y: yy,
-			width: 50,
-			height: 50,
-			WAIT: 2000,
-			timeToWait: 2000,
-			bulletToFire: {
-				x: xx - 25,
-				y: yy - 25,
-				width: 5,
-				height: 5,
-				angle: 0,
-				speed: 300,
-				damage: 25
-				},
+			width: 5,
+			height: 5,
+			speed: 300,
+			angle: anglei,
+			damage: 25,
 			});
 	}
 	
@@ -272,8 +243,10 @@
 			player.left = true;
 		if(evt.keyCode == 68)//d
 			player.right = true;
+		if(evt.keyCode == 32)//space
+			go = true;
 			
-		if(65 <= evt.keyCode && evt.keyCode >= 90)
+		if(32 <= evt.keyCode && evt.keyCode >= 90)
 			evt.preventDefault();
 	}
 	
@@ -286,38 +259,35 @@
 			player.left = false;
 		if(evt.keyCode == 68)//d
 			player.right = false;
+		if(evt.keyCode == 32)//space
+			go = false;
 			
-		if(65 <= evt.keyCode && evt.keyCode >= 90)
+		if(32 <= evt.keyCode && evt.keyCode >= 90)
 			evt.preventDefault();
 	}
+	function getClick(e) {
+		var evt = e || window.event;
+		mouse.x = evt.pageX - ctx.canvas.offsetLeft;
+		mouse.y = evt.pageY - ctx.canvas.offsetTop;
+		mouse.clicked = true;
+	}
+	function contains( r, m ) {
+		return ! (r.x>m.x || r.y>m.y || m.x>r.x+r.w || m.y>r.y+r.h );
+	}
+	
 	//****End handling buttons being pressed**
 	
-	//MOUSE FOR GRID
-	function handleMouseDown(e){
-		var evt = e || window ;
-		if( evt.button === 0 ){ //Left Click
-			player.LClick = true;
-		}
-	}
-	
-	function handleMouseUp(e){
-		var evt = e || window;
-		if( evt.button === 0){ //Left Click
-			player.LClick = false;
-		}
-	}
 	
 	function main(){
 		ctx = document.getElementById('canvas').getContext("2d");
-		playSetup();
+		menuSetup();
 		
 		window.requestAnimationFrame(tick);
 	}
 	
+	document.addEventListener('click', getClick);
 	document.addEventListener('keydown', handleKeyDown);
 	document.addEventListener('keyup', handleKeyUp);
-	document.addEventListener('mousedown', handleMouseDown);
-	document.addEventListener('mouseup', handleMouseUp);
 	
 	main();
 	

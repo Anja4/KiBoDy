@@ -30,8 +30,9 @@
 	var trees = [];
 	var go=false;
 	var playButton={x:300,y:350,w:200,h:70}
+	var introButton={x:300,y:450,w:200,h:70}
 	var mouse = { x: 0, y: 0, clicked: false };
-	
+
 	var player = {
 		x: 0,
 		y: 0,
@@ -45,7 +46,25 @@
 		right: false,
 		};
 	
+	//****************************INTRO********************
+	function introUpdate(time){
 	
+	}
+	function introDraw(){
+		ctx.clearRect(0,0,800,600)
+		ctx.fillStyle="black"
+		ctx.fillRect(0,0,800,600)
+		ctx.fillStyle="white"
+		ctx.font="18pt serif"
+		ctx.fillText("The year is 2093.",100,100)
+		ctx.fillText("The world is in ruins.",100,150);
+		ctx.fillText("One can't walk but 10 feet without being killed by a Mecha-Mitchell.",100,200)
+		ctx.fillText("Only one man can save the world.",100,250)
+		ctx.fillText("That man is Kibody, the Tree Master.",100,300)
+	}
+	function introSetup(){
+	
+	}
 	//****************************MENU***********
 	function menuUpdate(time){
 		if ( mouse.clicked && contains(playButton, mouse) === true ) {
@@ -53,14 +72,21 @@
 			draw = playDraw;
 			playSetup();
 		}
+		if ( mouse.clicked && contains(introButton, mouse) === true ) {
+			update = introUpdate;
+			draw = introDraw;
+			introSetup();
+		}
 	}
 	function menuDraw(){
 		ctx.clearRect(0,0,can.width,can.height);
 		ctx.fillStyle="green";
 		ctx.fillRect(300,350,200,70);
+		ctx.fillRect(introButton.x,introButton.y,introButton.w,introButton.h)
 		ctx.font="30pt Helvetica";
 		ctx.fillStyle="black";
 		ctx.fillText("Play!",340,400);
+		ctx.fillText("Story!",340,500);
 		ctx.font="30pt Cursive";
 		ctx.fillText("Game Thingy 1.6!",250,100);
 	}

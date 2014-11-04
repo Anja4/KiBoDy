@@ -112,11 +112,26 @@
 					}
 				}
 				if(index != -1){
-					var bul = trees[i].bulletToFire;
-					bul.angle = Math.atan2((baddies[index].y + (baddies[index].height * 0.5)) - treeCenter.y,(baddies[index].x + (baddies[index].width * 0.5)) - treeCenter.x);//(baddies[index].y + (baddies[index].height * 0.5)) - treeCenter.y
+					bar baddieCenter = {
+						x: baddies[index].x + (baddies[index].width * 0.5),
+						y: baddies[index].y + (baddies[index].height * 0.5),
+						};
+					var bul = {//The reason why it imports each individual variable is to create a copy of the record, instead of using the reference
+						x: treeCenter.x,
+						y: treeCenter.y,
+						width: trees[i].bulletToFire.width,
+						height: trees[i].bulletToFire.height,
+						angle: trees[i].bulletToFire.angle,
+						speed: trees[i].bulletToFire.speed,
+						damage: trees[i].bulletToFire.damage};
+					bul.angle = Math.atan2((baddieCenter.x - treeCenter.x),(baddieCenter.y - treeCenter.y));
 					addBullet(bul);
+					
+					trees[i].timeToWait += trees[i].WAIT;
 				}
-				trees[i].timeToWait += trees[i].WAIT;
+				else{
+					trees[i].timeToWait += time;
+				}
 			}
 		}
 		
@@ -136,26 +151,33 @@
 	function playDraw(){
 		ctx.clearRect(0,0,can.width, can.height);
 		
-		ctx.fillStyle = "#FF0000";
-		
-		ctx.fillRect(player.x, player.y, player.width, player.height);
-		
-		ctx.fillStyle = "#FF0000";
-		for(var i = 0; i < baddies.length; i++){
-			ctx.fillRect(baddies[i].x,baddies[i].y,baddies[i].width,baddies[i].height);
-		}
-		//ctx.fillStyle = "#FFFF00";
-		for(var j = 0; j < bullets.length; j++){
-			ctx.fillRect(bullets[j].x,bullets[j].y,bullets[j].width,bullets[j].height);
-		}
+		//Trees
 		ctx.fillStyle = "#00FF00";
 		for(var i = 0; i < trees.length; i++){
 			ctx.fillRect(trees[i].x,trees[i].y,trees[i].width,trees[i].height);
 		}
 		
+		//Baddies
+		ctx.fillStyle = "#FF0000";
+		for(var i = 0; i < baddies.length; i++){
+			ctx.fillRect(baddies[i].x,baddies[i].y,baddies[i].width,baddies[i].height);
+		}
+		
+		//Player
+		ctx.fillStyle = "#0000FF";
+		ctx.fillRect(player.x, player.y, player.width, player.height);
+		
+		//Bullets
+		ctx.fillStyle = "#FF0000";
+		for(var j = 0; j < bullets.length; j++){
+			ctx.fillRect(bullets[j].x,bullets[j].y,bullets[j].width,bullets[j].height);
+		}
+		
+		ctx.fillStyle = "#000000";
 		//ctx.fillText("" + lastTickTime,100,100); //This is test code, used to show the time
-		//ctx.fillText("" + trees[0].timeToWait,100,100);
-		//ctx.fillText("" + bullets[bullets.length - 1].x + " " + bullets[bullets.length - 1].y,100,120);
+		ctx.fillText("" + trees[0].timeToWait,0,10);
+		ctx.fillText("" + bullets[bullets.length - 1].x + ", " + bullets[bullets.length - 1].y,0,20);
+		ctx.fillText("" + bullets.length,0,30);
 	}
 	
 	//Starting position
@@ -174,10 +196,6 @@
 		
 		player.x = 10;
 		player.y = 10;
-		addBaddie();
-		addBaddie();
-		addBaddie();
-		addBaddie();
 		addBaddie();
 		addBullet(bul);
 		addTree(200,200,"blah");
